@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily News Letter: What Matters | Manali Patil</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        /* ---------- Masthead ---------- */
+        .masthead { max-width: 1400px; margin: 0 auto; padding: 130px 5% 30px; text-align: center; }
+        .kicker { font-size: .78rem; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--secondary-accent); margin-bottom: 14px; }
+        .masthead h1 { font-size: 2.9rem; letter-spacing: .5px; line-height: 1.15; }
+        .masthead .sub { max-width: 640px; margin: 14px auto 6px; color: var(--text-muted); font-size: 1rem; }
+        .masthead .edition-row { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 16px; font-size: .85rem; color: var(--text-muted); }
+        .edition-row .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--text-muted); }
+        .edition-row .live { color: var(--accent-color); font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+        .edition-row .live::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--accent-color); box-shadow: 0 0 8px var(--accent-color); }
+
+        /* ---------- Layout: sidebar + main ---------- */
+        .brief-layout { max-width: 1400px; margin: 0 auto; padding: 10px 5% 160px; display: grid; grid-template-columns: 280px 1fr; gap: 48px; align-items: start; }
+
+        .sidebar { position: sticky; top: 100px; display: flex; flex-direction: column; gap: 22px; }
+        .side-card { background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; backdrop-filter: blur(10px); }
+        .side-card h4 { font-size: .72rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 14px; font-family: var(--font-body); }
+
+        .toc { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+        .toc a { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 12px; border-radius: 10px; font-size: .9rem; color: var(--text-color); opacity: .75; }
+        .toc a i { color: var(--accent-color); font-size: 1rem; width: 18px; text-align: center; }
+        .toc a .count { font-size: .72rem; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 1px 8px; border-radius: 10px; }
+        .toc a:hover { opacity: 1; background: rgba(20, 184, 166, 0.08); }
+        .toc a.active { opacity: 1; background: rgba(20, 184, 166, 0.12); border: 1px solid rgba(20, 184, 166, 0.3); }
+
+        .side-btn { width: 100%; text-align: left; display: flex; align-items: center; gap: 10px; font-family: var(--font-body); font-size: .88rem; padding: 10px 14px; border-radius: 10px; cursor: pointer; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.03); color: var(--text-color); margin-bottom: 8px; transition: all .25s ease; }
+        .side-btn:hover { border-color: var(--accent-color); background: rgba(20, 184, 166, 0.08); }
+        .side-btn.primary { background: linear-gradient(135deg, var(--accent-color), var(--accent-color-dark)); border: none; color: #fff; font-weight: 600; justify-content: center; }
+        .side-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(20,184,166,.35); }
+        .side-btn i { font-size: 1rem; }
+        #voiceSel { width: 100%; font-family: var(--font-body); font-size: .82rem; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.03); color: var(--text-color); margin-top: 2px; }
+        .speak-note { font-size: .78rem; color: var(--accent-color); margin-top: 10px; display: none; text-align: center; }
+
+        /* ---------- Main content ---------- */
+        .brief-main { min-width: 0; }
+        .brief-section { margin-bottom: 54px; scroll-margin-top: 100px; }
+        .brief-sec-head { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--glass-border); padding-bottom: 12px; margin-bottom: 24px; }
+        .brief-sec-head .head-left { display: flex; align-items: center; gap: 12px; }
+        .sec-icon { width: 38px; height: 38px; border-radius: 10px; background: rgba(20,184,166,0.12); border: 1px solid rgba(20,184,166,0.25); display: flex; align-items: center; justify-content: center; color: var(--accent-color); font-size: 1.1rem; flex: none; }
+        .brief-sec-head h2 { font-size: 1.4rem; letter-spacing: .3px; }
+        .listen-mini { font-family: var(--font-body); font-size: .78rem; padding: 7px 14px; border-radius: 20px; border: 1px solid var(--glass-border); background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .listen-mini:hover { color: var(--accent-color); border-color: var(--accent-color); }
+
+        .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; }
+        .story-grid.single-col { grid-template-columns: 1fr; }
+
+        .story { background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 24px 26px; backdrop-filter: blur(10px); transition: border-color .25s ease, transform .25s ease; display: flex; flex-direction: column; }
+        .story:hover { border-color: rgba(20,184,166,0.35); transform: translateY(-3px); }
+        .story h3 { font-size: 1.08rem; line-height: 1.45; margin-bottom: 12px; }
+        .story p { font-size: .93rem; color: #c3ccd8; margin-bottom: 12px; }
+        .story .label { display: block; font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.6px; color: var(--secondary-accent); margin-bottom: 4px; }
+        .story .why { border-left: 3px solid var(--accent-color); padding: 10px 14px; background: rgba(20, 184, 166, 0.07); border-radius: 0 8px 8px 0; }
+        .story .abstract { font-style: italic; border: 1px solid var(--glass-border); border-radius: 8px; padding: 14px 16px; background: rgba(0,0,0,.2); font-size: .89rem; }
+        .story .src { margin-top: auto; padding-top: 6px; }
+        .story .src a { color: var(--accent-color); font-size: .8rem; font-weight: 500; }
+        .story .src a:hover { text-decoration: underline; }
+
+        .single-col .story { grid-column: 1 / -1; }
+
+        .end-note { text-align: center; font-size: .85rem; color: var(--text-muted); margin-top: 10px; }
+
+        /* ---------- Q&A ---------- */
+        .qa-answer { background: var(--card-bg); border: 1px solid var(--accent-color); border-radius: 16px; padding: 20px 24px; margin-bottom: 36px; display: none; backdrop-filter: blur(10px); }
+        .qa-answer .q { font-weight: 700; color: #fff; margin-bottom: 8px; font-size: .95rem; }
+        .qa-answer .a { font-size: .92rem; color: #c3ccd8; line-height: 1.6; }
+        .qa-answer .hear-btn { margin-top: 14px; font-family: var(--font-body); font-size: .8rem; padding: 8px 16px; border-radius: 18px; border: 1px solid var(--glass-border); background: transparent; color: var(--text-color); cursor: pointer; }
+        .qa-answer .hear-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
+
+        .qa-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(6, 10, 20, 0.94); backdrop-filter: blur(14px); border-top: 1px solid var(--glass-border); padding: 14px 18px; z-index: 100; }
+        .qa-inner { max-width: 1400px; margin: 0 auto; padding: 0 5%; display: flex; gap: 10px; align-items: center; width: 100%; position: relative; }
+        .qa-hint { position: absolute; top: -40px; left: 50%; transform: translateX(-50%); background: linear-gradient(90deg, var(--accent-color), var(--accent-color-dark)); color: #fff; font-size: .75rem; font-weight: 600; padding: 5px 16px; border-radius: 14px; white-space: nowrap; }
+        .qa-bar input { flex: 1; font-family: var(--font-body); font-size: .95rem; padding: 12px 18px; border-radius: 24px; border: 1px solid var(--glass-border); background: rgba(255,255,255,.05); color: var(--text-color); outline: none; }
+        .qa-bar input:focus { border-color: var(--accent-color); }
+        .mic-btn, .send-btn { width: 46px; height: 46px; border-radius: 50%; border: none; cursor: pointer; font-size: 1.1rem; background: linear-gradient(135deg, var(--accent-color), var(--accent-color-dark)); color: #fff; flex: none; transition: transform .2s; }
+        .mic-btn:hover, .send-btn:hover { transform: scale(1.08); }
+        .mic-btn.listening { background: #d64550; animation: micPulse 1s infinite; }
+        @keyframes micPulse { 50% { transform: scale(1.15); } }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 980px) {
+            .brief-layout { grid-template-columns: 1fr; padding-bottom: 130px; }
+            .sidebar { position: static; flex-direction: row; overflow-x: auto; gap: 14px; padding-bottom: 4px; }
+            .side-card { flex: none; min-width: 260px; }
+            .masthead h1 { font-size: 2.2rem; }
+            .story-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            .masthead { padding-top: 110px; }
+            .masthead h1 { font-size: 1.8rem; }
+            .qa-hint { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-glob"></div>
+
+    <nav class="navbar">
+        <div class="logo"><a href="../">Manali Patil</a></div>
+        <ul class="nav-links">
+            <li><a href="../#about">About</a></li>
+            <li><a href="../#experience">Experience</a></li>
+            <li><a href="./" style="color: var(--accent-color);">Daily News Letter</a></li>
+            <li><a href="../#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <header class="masthead">
+        <div class="kicker">Curated every morning, before you start your day</div>
+        <h1>Daily News Letter: What Matters</h1>
+        <p class="sub">World events, the global AI industry, Bay Area AI moves, and one standout research paper — distilled with the details you need, so you don't have to click through.</p>
+        <div class="edition-row">
+            <span id="edition"></span>
+            <span class="dot"></span>
+            <span class="live">Delivered daily · 5:00 AM PT</span>
+        </div>
+    </header>
+
+    <div class="brief-layout">
+        <aside class="sidebar">
+            <div class="side-card">
+                <h4>On This Page</h4>
+                <ul class="toc" id="tocList"></ul>
+            </div>
+            <div class="side-card">
+                <h4>Listen &amp; Ask</h4>
+                <button class="side-btn primary" onclick="toggleListenAll()"><i class="ri-play-fill"></i> Listen to full briefing</button>
+                <button class="side-btn" onclick="stopSpeech()"><i class="ri-stop-fill"></i> Stop</button>
+                <select id="voiceSel" onchange="setVoice(this.value)"></select>
+                <button class="side-btn" style="margin-top:10px" onclick="focusAsk()"><i class="ri-mic-line"></i> Ask a question</button>
+                <div class="speak-note" id="speakNote">Reading aloud…</div>
+            </div>
+        </aside>
+
+        <main class="brief-main">
+            <div class="qa-answer" id="qaAnswer">
+                <div class="q" id="qaQ"></div>
+                <div class="a" id="qaA"></div>
+                <button class="hear-btn" onclick="speakAnswer()"><i class="ri-volume-up-line"></i> Hear answer</button>
+            </div>
+
+            <div id="content"></div>
+
+            <p class="end-note">You're all caught up. Tap the mic below to ask about anything above.</p>
+        </main>
+    </div>
+
+    <div class="qa-bar">
+        <div class="qa-inner">
+            <div class="qa-hint">💬 Curious about a story? Ask here</div>
+            <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Ask by voice"><i class="ri-mic-fill"></i></button>
+            <input id="qInput" placeholder="Ask me anything about today's stories…" onkeydown="if(event.key==='Enter')ask()">
+            <button class="send-btn" onclick="ask()" title="Ask"><i class="ri-send-plane-fill"></i></button>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script>
+    /* ---------- Render ---------- */
+    document.getElementById('edition').textContent = NEWSLETTER.edition;
+    document.title = 'Daily News Letter: What Matters · ' + NEWSLETTER.edition;
+
+    const content = document.getElementById('content');
+    const tocList = document.getElementById('tocList');
+
+    NEWSLETTER.sections.forEach(sec => {
+        // TOC entry
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="#${sec.id}" data-target="${sec.id}"><span><i class="${sec.icon}"></i>${sec.title}</span><span class="count">${sec.items.length}</span></a>`;
+        tocList.appendChild(li);
+
+        // Section
+        const s = document.createElement('section');
+        s.className = 'brief-section'; s.id = sec.id;
+        const singleCol = sec.items.length <= 1;
+        let html = `<div class="brief-sec-head">
+            <div class="head-left"><div class="sec-icon"><i class="${sec.icon}"></i></div><h2>${sec.title}</h2></div>
+            <button class="listen-mini" onclick="speakSection('${sec.id}')"><i class="ri-volume-up-line"></i> Listen</button>
+            </div>
+            <div class="story-grid ${singleCol ? 'single-col' : ''}">`;
+        sec.items.forEach(it => {
+            html += `<article class="story"><h3>${it.headline}</h3>
+                <p><span class="label">What happened</span>${it.what}</p>`;
+            if (it.abstract) html += `<p><span class="label">Abstract</span></p><p class="abstract">${it.abstract}</p>`;
+            html += `<p class="why"><span class="label">Why it matters</span>${it.why}</p>
+                <p class="src"><a href="${it.source.url}" target="_blank" rel="noopener">Source: ${it.source.label} ↗</a></p></article>`;
+        });
+        html += `</div>`;
+        s.innerHTML = html;
+        content.appendChild(s);
+    });
+
+    /* Scroll-spy for TOC */
+    const tocLinks = Array.from(document.querySelectorAll('.toc a'));
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                tocLinks.forEach(l => l.classList.remove('active'));
+                const link = tocLinks.find(l => l.dataset.target === e.target.id);
+                if (link) link.classList.add('active');
+            }
+        });
+    }, { rootMargin: '-40% 0px -50% 0px' });
+    NEWSLETTER.sections.forEach(sec => obs.observe(document.getElementById(sec.id)));
+
+    /* ---------- Text extraction ---------- */
+    function itemText(it){ return [it.headline, it.what, it.abstract || '', 'Why this matters: ' + it.why].join('. '); }
+    function sectionText(id){
+        const sec = NEWSLETTER.sections.find(s => s.id === id);
+        return sec.title + '. ' + sec.items.map(itemText).join('. Next story. ');
+    }
+    function fullText(){ return NEWSLETTER.sections.map(s => sectionText(s.id)).join('. Next section. '); }
+
+    /* ---------- Soothing speech ---------- */
+    const synth = window.speechSynthesis;
+    let chosenVoice = null, lastAnswer = '';
+    function rankVoice(v){
+        const n = v.name.toLowerCase();
+        if(!v.lang.startsWith('en')) return -1;
+        let s = 0;
+        if(/premium/.test(n)) s += 100;
+        if(/enhanced/.test(n)) s += 90;
+        if(/natural|neural|siri/.test(n)) s += 80;
+        if(/ava|zoe|samantha|allison|susan|karen|moira|serena|nicky/.test(n)) s += 40;
+        if(/google (us|uk) english/.test(n)) s += 30;
+        if(/compact|whisper|bells|bad news|albert|fred|junior|kathy|ralph|trinoids|zarvox|organ|cellos|boing|bubbles|deranged|hysterical/.test(n)) s -= 200;
+        return s;
+    }
+    function loadVoices(){
+        const voices = synth.getVoices().filter(v => v.lang.startsWith('en'));
+        if(!voices.length) return;
+        const sorted = [...voices].sort((a,b) => rankVoice(b) - rankVoice(a));
+        const saved = localStorage.getItem('briefVoice');
+        chosenVoice = voices.find(v => v.name === saved) || sorted[0];
+        const sel = document.getElementById('voiceSel');
+        sel.innerHTML = '';
+        sorted.filter(v => rankVoice(v) > -100).forEach(v => {
+            const o = document.createElement('option');
+            o.value = v.name; o.textContent = '🔊 ' + v.name;
+            if(chosenVoice && v.name === chosenVoice.name) o.selected = true;
+            sel.appendChild(o);
+        });
+    }
+    function setVoice(name){
+        chosenVoice = synth.getVoices().find(v => v.name === name) || chosenVoice;
+        localStorage.setItem('briefVoice', name);
+        speak('Good morning. This is how your briefing will sound.');
+    }
+    synth.onvoiceschanged = loadVoices;
+    loadVoices();
+
+    function speak(text){
+        stopSpeech();
+        text = text.replace(/·/g, ',');
+        const chunks = text.match(/[^.!?]+[.!?]+/g) || [text];
+        const groups = [];
+        for(let i = 0; i < chunks.length; i += 3) groups.push(chunks.slice(i, i + 3).join(' '));
+        groups.forEach(g => {
+            const u = new SpeechSynthesisUtterance(g);
+            if(chosenVoice) u.voice = chosenVoice;
+            u.rate = 0.92; u.pitch = 1.0; u.volume = 0.95;
+            synth.speak(u);
+        });
+        document.getElementById('speakNote').style.display = 'block';
+    }
+    function stopSpeech(){ synth.cancel(); document.getElementById('speakNote').style.display = 'none'; }
+    function toggleListenAll(){ if(synth.speaking) stopSpeech(); else speak(NEWSLETTER.greeting + ' ' + fullText()); }
+    function speakSection(id){ speak(sectionText(id)); }
+    function speakAnswer(){ if(lastAnswer) speak(lastAnswer); }
+    function focusAsk(){ document.getElementById('qInput').focus(); document.querySelector('.qa-bar').scrollIntoView({behavior:'smooth', block:'end'}); }
+
+    /* ---------- Voice input ---------- */
+    let rec = null, listening = false;
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(SR){
+        rec = new SR(); rec.lang = 'en-US'; rec.interimResults = false;
+        rec.onresult = e => { document.getElementById('qInput').value = e.results[0][0].transcript; ask(); };
+        rec.onend = () => { listening = false; document.getElementById('micBtn').classList.remove('listening'); };
+        rec.onerror = () => { listening = false; document.getElementById('micBtn').classList.remove('listening');
+            document.getElementById('qInput').placeholder = 'Mic unavailable — type your question instead'; };
+    }
+    function toggleMic(){
+        if(!rec){ document.getElementById('qInput').placeholder = 'Voice input not supported in this browser — type instead'; focusAsk(); return; }
+        if(listening){ rec.stop(); return; }
+        listening = true; document.getElementById('micBtn').classList.add('listening'); rec.start();
+    }
+
+    /* ---------- Q&A: retrieval over today's stories ---------- */
+    const STOP = new Set(['the','a','an','is','are','was','were','what','who','why','how','when','where','tell','me','more','about','of','in','on','to','and','or','for','with','did','does','do','it','that','this','can','you','i','my','please','news','today','story','happened','explain']);
+    function tokens(t){ return t.toLowerCase().replace(/[^a-z0-9$%\s]/g,' ').split(/\s+/).filter(w => w.length > 1 && !STOP.has(w)); }
+    function ask(){
+        const q = document.getElementById('qInput').value.trim();
+        if(!q) return;
+        const qt = tokens(q);
+        let best = null, bestScore = 0;
+        NEWSLETTER.sections.forEach(sec => sec.items.forEach(it => {
+            const hay = tokens(itemText(it));
+            const hayHead = tokens(it.headline);
+            let score = 0;
+            qt.forEach(w => {
+                if(hayHead.includes(w)) score += 3;
+                else if(hay.includes(w)) score += 1;
+            });
+            if(score > bestScore){ bestScore = score; best = it; }
+        }));
+        const box = document.getElementById('qaAnswer');
+        document.getElementById('qaQ').textContent = 'Q: ' + q;
+        let ans;
+        if(best && bestScore >= 2){
+            ans = 'Here is what today\'s brief covers on that. ' + best.headline + '. ' + best.what
+                + (best.abstract ? ' The paper\'s abstract adds: ' + best.abstract : '')
+                + ' Why it matters: ' + best.why
+                + ' For the full story, follow the ' + best.source.label + ' link in the brief.';
+        } else {
+            ans = 'Today\'s brief doesn\'t go deeper on that topic. The stories covered are: '
+                + NEWSLETTER.sections.map(s => s.items.map(i => i.headline).join('; ')).join('; ')
+                + '. Try asking about one of those.';
+        }
+        lastAnswer = ans;
+        document.getElementById('qaA').textContent = ans;
+        box.style.display = 'block';
+        box.scrollIntoView({behavior:'smooth', block:'center'});
+        speak(ans);
+        document.getElementById('qInput').value = '';
+    }
+    </script>
+</body>
+</html>
